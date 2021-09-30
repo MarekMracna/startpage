@@ -4,7 +4,25 @@
     font-size: 14px;
     --accent: rgba(154, 149, 224, 0.753);
 
-
+    --background: #1c1c1c;
+    --foreground: #dbdbdb;
+    --cursor: #dbdbdb;
+    --color0: #1c1c1c;
+    --color1: #616161;
+    --color2: #6B6B6B;
+    --color3: #737373;
+    --color4: #8C8C8C;
+    --color5: #969696;
+    --color6: #B0B0B0;
+    --color7: #dbdbdb;
+    --color8: #999999;
+    --color9: #616161;
+    --color10: #6B6B6B;
+    --color11: #737373;
+    --color12: #8C8C8C;
+    --color13: #969696;
+    --color14: #B0B0B0;
+    --color15: #dbdbdb;
     
     --bg: var(--foreground);
     --fg: var(--background);
