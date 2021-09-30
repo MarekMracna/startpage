@@ -1,0 +1,111 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+:root {
+    font-size: 12px;
+    --max-box-width: 20rem;
+    --max-box-height: 20rem;
+}
+
+html, body {
+    height: 100%;
+}
+
+a {
+    text-decoration: none;
+    color: currentColor;
+}
+
+a:visited {
+    color: currentColor;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+}
+
+main {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#splash {
+    height: var(--max-box-height);
+    aspect-ratio: 1/1;
+    pointer-events: none;
+    user-select: none;
+    object-fit: cover;
+}
+
+#boxes {
+    display: flex;
+    flex-flow: column;
+}
+
+.box {
+    display: flex;
+    flex-flow: column nowrap;
+    max-height: var(--max-box-height);
+}
+
+.entries {
+    --padding: 1rem;
+    transition: all .4s ease-in-out;
+    display: flex;
+    overflow: hidden;
+    scrollbar-width: none;
+    user-select: none;
+    padding: 0;
+}
+
+.entry {
+    position: relative;
+    overflow-y: hidden;
+    text-overflow: ellipsis;
+    scrollbar-width: none;
+    --color: --foreground;
+    color: var(--color);
+}
+
+input[type='radio'] {
+    display: none;
+}
+
+.title {
+    --color: var(--accent);
+    background: var(--color);
+    user-select: none;
+}
+
+.title h1 {
+    font-size: 1em;
+    overflow: auto;
+    scrollbar-width: none;
+    text-overflow: '┆' '┆';
+    white-space: nowrap;
+}
+
+
+[data-time]::after {
+    content: attr(data-time);
+    font-size: .75em;
+}
+
+.title h1::after {
+    font-size: .5em;
+}
+
+
+.title h1::-webkit-scrollbar {
+    display: none;
+}

@@ -1,0 +1,113 @@
+@import url("file:///home/marek/.cache/wal/colors.css");
+
+:root {
+    font-size: 14px;
+    --accent: rgba(154, 149, 224, 0.753);
+
+
+    
+    --bg: var(--foreground);
+    --fg: var(--background);
+    --accent: var(--color4);
+}
+
+:root[dark] {
+    --fg: var(--foreground);
+    --bg: var(--background);
+}
+
+* {
+    font-family: serif
+}
+
+main {
+    background: var(--bg);
+}
+
+#content {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 4rem;
+}
+
+textarea {
+    font-family: monospace;
+    font-size: .9rem;
+    font-stretch: condensed;
+    padding: .5rem;
+    border-radius: .5rem;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+#settings {
+    background: var(--bg);
+    color: var(--fg);
+    border-radius: 12px;
+    box-shadow: 2px 2px 6px #000000aa;
+    --padding: 1rem;
+}
+
+#settingsOpen, #darkmode {
+    color: var(--fg);
+}
+
+#tabs div:first-child button, #settingsBtns button {
+    padding: .2rem 1rem;
+    border-radius: .6rem;
+    background: #77777733;
+    color: var(--fg);
+    font-family: sans-serif;
+    transition: background .2s;
+}
+
+#settingsBtns button:hover {
+    background: #77777755;
+}
+
+.title:hover {
+    outline: 3px currentColor double;
+    outline-offset: -.5rem;
+}
+
+#boxes, .box {
+    flex-flow: row nowrap;
+}
+
+.title {
+    color: var(--background);
+    height: var(--max-box-height);
+    --border-size: 0px;
+    --padding: 1rem;
+    font-size: 2rem;
+    padding: var(--padding) .5rem;
+    /* border: var(--border-size) solid #000; */
+    /* border: var(--border-size) dashed rgb(158, 0, 124); */
+}
+
+.title h1 {
+    block-size: 1.25em;
+    max-height: calc(var(--max-box-height) - 2 * var(--padding) - 2 * var(--border-size));
+    writing-mode: vertical-lr;
+}
+
+.entries {
+    max-width: 0;
+    flex-direction: column;
+    width: var(--max-box-width);
+    gap: .7rem;
+}
+
+.entry {
+    --color: var(--fg);
+    width: min-content;
+    max-width: calc(var(--max-box-width) - 2 * var(--padding));
+    white-space: nowrap;
+}
+
+input[type='radio']:checked ~ .entries {
+    max-width: var(--max-box-width);
+    padding: var(--padding);
+    user-select: auto;
+}
