@@ -206,8 +206,11 @@ document.addEventListener("DOMContentLoaded", ()=>{
             $.img()
                 .att$('id', 'splash')
                 .att$('src', db.getItem('splash')),
-            $.div(...JSON.parse(dbboxes).map(box))
-                .att$('id', 'boxes')
+            $.div(...JSON.parse(dbboxes)
+		  .map(box)
+		  .map((b, i) => b.map$(
+		      e=>e.querySelector('.title').style.setProperty('--color', `var(--color${i%14+2})`)))
+		 ).att$('id', 'boxes')
         ).att$('id', 'content'),
         settings
     ))
