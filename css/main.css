@@ -47,6 +47,10 @@ main {
     object-fit: cover;
 }
 
+#splash[src="null"] {
+    display: none;
+}
+
 #boxes {
     display: flex;
     flex-flow: column;
