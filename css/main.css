@@ -66,7 +66,7 @@ main {
     --padding: 1rem;
     transition: all .4s ease-in-out;
     display: flex;
-    overflow: hidden;
+    overflow-y: auto;
     scrollbar-width: none;
     user-select: none;
     padding: 0;
@@ -74,7 +74,6 @@ main {
 
 .entry {
     position: relative;
-    overflow-y: hidden;
     text-overflow: ellipsis;
     scrollbar-width: none;
     --color: --foreground;
