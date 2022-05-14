@@ -59,19 +59,23 @@ a:hover {
     text-decoration: underline;
 }
 
-#settings {
+#settings form {
     background: var(--bg);
     color: var(--fg);
     border-radius: 12px;
     box-shadow: 2px 2px 6px #000000aa;
     --padding: 1rem;
+    padding: var(--padding);
+    display: flex;
+    gap: var(--padding);
+    flex-direction: column;
 }
 
 #settingsOpen, #darkmode {
     color: var(--fg);
 }
 
-#tabs div:first-child button, #settingsBtns button {
+#settings [clickable] {
     padding: .2rem 1rem;
     border-radius: .6rem;
     background: #77777733;
@@ -80,7 +84,7 @@ a:hover {
     transition: background .2s;
 }
 
-#settingsBtns button:hover {
+#settings [clickable]:hover {
     background: #77777755;
 }
 

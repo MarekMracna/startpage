@@ -1,12 +1,4 @@
-#settingsOverlay {
-    background: #00000055;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-}
-
-#settings {
+#settings form {
     width: 50%;
     height: 50%;
     background: #fff;
@@ -36,7 +28,7 @@
     content: '\e801';
 }
 
-#tabs {
+tabs {
     width: 100%;
     height: 100%;
     display: flex;
@@ -44,7 +36,7 @@
     align-items: center;
 }
 
-#tabs div:first-child, #settingsBtns {
+tabs div:first-child, #settingsBtns {
     display: flex;
     flex-direction: row;
     gap: .5rem;
@@ -75,9 +67,11 @@
 }
 
 .swatches span {
-    display: block;
-    width: 10px;
-    height: 10px;
-    cursor: pointer;
+    display: block !important;
+    width: 10px !important;
+    height: 10px !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    cursor: pointer !important;
 }
 

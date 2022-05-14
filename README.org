@@ -1,0 +1,6 @@
+* README
+
+** What is this?
+
+My custom startpage written in vanilla JS. All data is stored in
+localstorage. Bookmarks are defined in /settings/ using JSON.

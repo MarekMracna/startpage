@@ -9,10 +9,10 @@ const box = data => {
     const hash = unique()
     return $.div(
         $.radio()
-            .att$('name', `box`)
-            .att$('id', `box${hash}`),
+         .att$('name', `box`)
+         .att$('id', `box${hash}`),
         format(data.title)($.label(t).wrap$(t))
-            .map$(self => self.classList.add('title'))
+            .class$('title')
             .att$('for', `box${hash}`)
             .click$(e => {
 		// We don't open an empty box
@@ -28,18 +28,18 @@ const box = data => {
                 }
             }),
         $.div(...data.entries.map(de => 
-            format(de)($.div()).map$(self => self.classList.add('entry'))
+            format(de)($.div()).class$('entry')
         )).att$('class', 'entries')
     ).att$('class', 'box')
 }
 
 const colorPreview = () => $.div(...
-                                [...Array(16).keys()] // = [0..16]
-                                .map(x=>$.span()
-                                    .click$(() => navigator.clipboard.writeText(`#{var(--color${x})}`))
-                                    .att$('title', `#{var(--color${x})}`)
-                                    .css$('background-color', `var(--color${x})`)
-                            )).att$('class', 'swatches')
+				     [...Array(16).keys()] // = [0..16]
+				 .map(x=>$.span()
+					  .click$(() => navigator.clipboard.writeText(`#{var(--color${x})}`))
+					  .att$('title', `#{var(--color${x})}`)
+					  .css$('background-color', `var(--color${x})`)
+)).class$('swatches')
 
 const db = window.localStorage
 
@@ -104,13 +104,13 @@ function format(d) {
         }
     }
     const modifiers = []
-    const rawText = d.replace(/([#/%@])\{([^\}]+)\}/g, (_, sigil, bracket) => 
-        modifiers.push(sigilMap[sigil](bracket))
-        && '')
+    const rawText = d.replace(/([#\/%@])\{([^\}]+)\}/g, (_, sigil, bracket) => 
+        modifiers.push(sigilMap[sigil](bracket)) && '')
+    
     return el => {
-        modifiers.forEach(f => f(el))
-        el.ch$(rawText)
-        return el
+	modifiers.forEach(f => f(el))
+	el.ch$(rawText)
+	return el
     }
 }
 
@@ -127,13 +127,11 @@ function updateDB(iBoxes, iSplash, then) {
         db.setItem('boxes', iBoxes)
         boxes.replaceWith(
             $.div(...JSON.parse(iBoxes).map(box))
-                .att$('id', 'boxes')
+             .att$('id', 'boxes')
         )
         then()
     }
 }
-
-const icon = content => $.i().data$('icon', content).map$(el => el.classList.add('icon'))
 
 document.addEventListener("DOMContentLoaded", ()=>{
     let dbboxes = db.getItem('boxes') || "[\n\n]"
@@ -142,76 +140,60 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
     const iLayout = $.editor()
     const iSplash = $.input().att$('type', 'text')
-    const settings = $.overlay().att$('id', 'settingsOverlay')
-    settings.ch$(
-        $.div(
-            $.tabs({
-                'Boxes': $.div(
-                    iLayout,
-                    colorPreview()
-                      .css$('display', 'flex')
-                      .css$('border','solid 1px black')
-                    ).att$('id', 'settingsBoxes'),
-                'Theme': $.div(
-                    $.label('Picture: ').att$('for', 'iSplash'),
-                    iSplash.att$('id', 'iSplash').att$('name', 'iSplash')
-                    )
+    const settings = $.dialog(
+	[
+	    overlay => $.button('Import').click$(()=>{
+		const input = $.input().att$('type', 'file').att$('accept', '.json')
+		input.click()
+		input.addEventListener('change', ()=> {
+                    input.files[0].text().then(str => updateDB(str, overlay.toggle$))
+		})
             }),
-            $.div(
-                $.button('Import')
-                    .click$(()=>{
-                        const input = $.input().att$('type', 'file').att$('accept', '.json')
-                        input.click()
-                        input.addEventListener('change', ()=> {
-                            console.log('aaaaa')
-                            input.files[0].text().then(str => updateDB(str, settings.toggle$))
-                        })
-                    }),
-                $.button('Export')
-                    .click$(e => {
-                        const data = db.getItem('boxes')
-                        const filename = `startpage-${(new Date()).toISOString().split('T')[0]}.json`
-                        $.a()
-                            .att$('download', filename)
-                            .att$('href', `data:application/json;charset=utf-8,${encodeURIComponent(data)}`)
-                            .click()
-                    }),
-                $.button('Cancel')
-                    .click$(settings.toggle$),
-                $.button('Save')
-                    .click$(() => updateDB(iLayout.value, iSplash.value, settings.toggle$))
-            ).att$('id', 'settingsBtns')
-        ).att$('id', 'settings')
-    )
+	    () => $.button('Export').click$(e => {
+		const data = db.getItem('boxes')
+		const filename = `startpage-${(new Date()).toISOString().split('T')[0]}.json`
+		$.a()
+		 .att$('download', filename)
+		 .att$('href', `data:application/json;charset=utf-8,${encodeURIComponent(data)}`)
+		 .click()
+            }),
+	    $.CANCEL,
+	    overlay => $.button('Save').click$(() => updateDB(iLayout.value, iSplash.value, overlay.toggle$))
+	],
+	$.tabs({
+            'Boxes': () => $.div(
+                iLayout.map$(e => e.value = db.getItem('boxes')),
+                colorPreview()
+		    .css$('display', 'flex')
+		    .css$('border','solid 1px black')
+            ).att$('id', 'settingsBoxes'),
+            'Theme': () => $.div(
+                $.label('Picture: ').att$('for', 'iSplash'),
+                iSplash.att$('id', 'iSplash').att$('name', 'iSplash').map$(e => e.value = db.getItem('splash'))
+            )
+        })
+    ).att$('id', 'settings')
+    body.appendChild(settings)
     body.appendChild(
-    $.main(
-        $.button('LIGHT/DARK')
-            .att$('id', 'darkmode')
-            .click$(() => {
-                document.documentElement.toggleAttribute('dark')
-                if (document.documentElement.hasAttribute('dark'))
-                    db.setItem('dark', 'true')
-                else 
-                    db.setItem('dark', 'false')
-            }),
-        $.button('SETTINGS')
-            .att$('id', 'settingsOpen')
-            .click$(() => {
-                tabs.switchTo(0)
-                settings.querySelector('textarea')?.map$(t => t.value = db.getItem('boxes'))
-                settings.querySelector('input[type="text"]')?.map$(e => e.value = db.getItem('splash'))
-                settings.toggle$()
-            }),
-        $.div(
-            $.img()
-                .att$('id', 'splash')
-                .att$('src', db.getItem('splash')),
-            $.div(...JSON.parse(dbboxes)
-		  .map(box)
-		  .map((b, i) => b.map$(
-		      e=>e.querySelector('.title').style.setProperty('--color', `var(--color${i%14+2})`)))
-		 ).att$('id', 'boxes')
-        ).att$('id', 'content'),
-        settings
+	$.main(
+            $.button('LIGHT/DARK')
+             .att$('id', 'darkmode')
+             .click$(() => {
+                 document.documentElement.toggleAttribute('dark')
+                 db.setItem('dark', ''+document.documentElement.hasAttribute('dark'))
+             }),
+            $.button('SETTINGS')
+             .att$('id', 'settingsOpen')
+             .click$(() => settings.toggle$()),
+            $.div(
+		$.img()
+                 .att$('id', 'splash')
+                 .att$('src', db.getItem('splash')),
+		$.div(...JSON.parse(dbboxes)
+		      .map(box)
+		      .map((b, i) => b.map$(
+			  e=>e.querySelector('.title').style.setProperty('--color', `var(--color${i%14+2})`)))
+		).att$('id', 'boxes')
+            ).att$('id', 'content')
     ))
 })
