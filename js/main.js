@@ -29,8 +29,8 @@ const box = data => {
             }),
         $.div(...data.entries.map(de => 
             format(de)($.div()).class$('entry')
-        )).att$('class', 'entries')
-    ).att$('class', 'box')
+        )).class$('entries')
+    ).class$('box')
 }
 
 const colorPreview = () => $.div(...
