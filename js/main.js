@@ -61,7 +61,7 @@ function unique(digits=6) {
 
 function enforceProtocol(url) {
     if (url.startsWith('http://') || url.startsWith('https://')) return url
-    return 'https://'+url
+    return 'http://'+url
 }
 
 function format_date(d) {
