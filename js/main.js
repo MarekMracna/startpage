@@ -4,10 +4,11 @@
 /// Each box gets a unique alphanumeric hash which is used for linking
 /// a hidden radio element for opening/closing and the box itself
 
-const box = data => {
+const box = (data, index) => {
     let t = $.h1()
     const hash = unique()
-    return $.div(
+    const b = $.div(
+	$.kbd(kbd_clue_labels[index]).class$('kbdClue'),
         $.radio()
          .att$('name', `box`)
          .att$('id', `box${hash}`),
@@ -15,31 +16,32 @@ const box = data => {
             .class$('title')
             .att$('for', `box${hash}`)
             .click$(e => {
-		// We don't open an empty box
-                if (data.entries.length == 0) {
-                    e.preventDefault()
-                    return;
-                }
-		// Enable unchecking the radio element
-                let r = e.currentTarget.previousElementSibling
-                if (r.checked) {
-                    r.checked = false;
-                    e.preventDefault()
-                }
+                e.preventDefault()
+		b.toggle$()
             }),
-        $.div(...data.entries.map(de => 
-            format(de)($.div()).class$('entry')
+        $.div(...data.entries.map((de, index) => 
+            format(de)($.div($.kbd(kbd_clue_labels[index]).class$('kbdClue'))).class$('entry')
         )).class$('entries')
     ).class$('box')
+    b.toggle$ = force => {
+	if (data.entries.length == 0) return;
+	const r = b.querySelector('input')
+	const new_val = force === undefined ? !r.checked : force
+	r.checked = new_val
+	boxes.att$('current', new_val && hash)
+    }
+    return b
 }
 
 const colorPreview = () => $.div(...
-				     [...Array(16).keys()] // = [0..16]
+					 [...Array(16).keys()] // = [0..16]
 				 .map(x=>$.span()
 					  .click$(() => navigator.clipboard.writeText(`#{var(--color${x})}`))
 					  .att$('title', `#{var(--color${x})}`)
 					  .css$('background-color', `var(--color${x})`)
 )).class$('swatches')
+
+const kbd_clue_labels = "1234567890abcdefghijklmnopqrstuvwxyz".split('')
 
 const db = window.localStorage
 
@@ -133,42 +135,45 @@ function updateDB(iBoxes, iSplash, then) {
     }
 }
 
-let keyboardMode = false
 let _event_listeners = []
 function toggleKeyboardMode() {
-    keyboardMode = !keyboardMode
+    body.toggleAttribute('kbd')
     function clean() {
 	for (const l of _event_listeners) {
 	    document.removeEventListener('keydown', l)
 	}
-	boxes
-	    .querySelectorAll('.kbdClue')
-	    .forEach(el => el.remove())
     }
-    const labels = "1234567890abcdefghijklmnopqrstuvwxyz".split('')
+    
     function attachKbdEvent(parent, fn) {
 	for (let i = 0; i < parent.children.length; i++) {
-	    const el = parent.children[i]
-	    el.prepend($.i(labels[i]).class$('kbdClue'))
 	    const listener = e => {
-		if (e.key === labels[i]) {
+		if (e.key === kbd_clue_labels[i]) {
 		    clean()
-		    fn(el)
+		    fn(parent.children[i])
 		}
 	    }
 	    _event_listeners.push(listener)
 	    document.addEventListener('keydown', listener)
 	}
     }
-    if (keyboardMode) {
-	attachKbdEvent(boxes, b => {
-	    b.querySelector('input').checked = true
-	    attachKbdEvent(b.querySelector('.entries'), e => {
+    if (body.hasAttribute('kbd')) {
+	let curr = boxes.getAttribute('current')
+	if (curr) {
+	    const current_box = boxes.querySelector(`#box${curr}`).parentElement
+	    attachKbdEvent(current_box.querySelector('.entries'), e => {
 		e.querySelector('a')?.click()
 	    })
-	})
+	} else {
+	    attachKbdEvent(boxes, b => {
+		b.toggle$(true)
+		attachKbdEvent(b.querySelector('.entries'), e => {
+		    e.querySelector('a')?.click()
+		})
+	    })
+	}
     } else {
 	clean()
+	Array.from(boxes.children).forEach(b => b.toggle$(false))
     }
 }
 
@@ -215,6 +220,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     body.appendChild(settings)
     body.appendChild(
 	$.main(
+	    $.span($.kbd('Tab'), " to toggle keyboard navigation"),
             $.button('LIGHT/DARK')
              .att$('id', 'darkmode')
              .click$(() => {
@@ -239,7 +245,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
     document.addEventListener('keydown', e => {
 	if (e.key === 'Tab') {
 	    e.preventDefault()
-	    toggleKeyboardMode()
+	    if (settings.hasAttribute('hidden'))
+		toggleKeyboardMode()
 	}
     })
 })

@@ -114,27 +114,50 @@ input[type='radio'] {
     display: none;
 }
 
-.kbdClue {
-    cursor: pointer;
-    aspect-ratio: 1/1;
-    height: 1.5rem;
-    line-height: 1.5rem;
-    vertical-align: middle;
-    text-align: center;
-    color: var(--background);
+kbd {
+    cursor: default;
+    padding: 1px 6px;
+    color: var(--fg);
     background: var(--accent);
     border-radius: 4px;
     display: block;
     font-style: normal;
 }
 
-.box > .kbdClue {
+.kbdClue {
+    display: none;
+    user-select: none;
+}
+
+body[kbd] #boxes[current] .box > .kbdClue {
+    display: none;
+}
+
+body[kbd] .box > .kbdClue {
     position: absolute;
     top: -2rem;
     left: 1rem;
+    display: block;
 }
 
-.entry > .kbdClue {
-    margin-right: 10px;
+body[kbd] .entry > .kbdClue {
+    position: absolute;
+    left: -2rem;
+    display: inline-block;
+}
+
+body[kbd] .entry {
+    margin-left: 2rem;
+}
+
+main > span {
+    position: fixed;
+    bottom: 0;
+    right: 10rem;
+    color: var(--fg);
+    user-select: none;
+}
+
+main > span kbd {
     display: inline-block;
 }
