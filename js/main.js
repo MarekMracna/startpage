@@ -133,6 +133,45 @@ function updateDB(iBoxes, iSplash, then) {
     }
 }
 
+let keyboardMode = false
+let _event_listeners = []
+function toggleKeyboardMode() {
+    keyboardMode = !keyboardMode
+    function clean() {
+	for (const l of _event_listeners) {
+	    document.removeEventListener('keydown', l)
+	}
+	boxes
+	    .querySelectorAll('.kbdClue')
+	    .forEach(el => el.remove())
+    }
+    const labels = "1234567890abcdefghijklmnopqrstuvwxyz".split('')
+    function attachKbdEvent(parent, fn) {
+	for (let i = 0; i < parent.children.length; i++) {
+	    const el = parent.children[i]
+	    el.prepend($.i(labels[i]).class$('kbdClue'))
+	    const listener = e => {
+		if (e.key === labels[i]) {
+		    clean()
+		    fn(el)
+		}
+	    }
+	    _event_listeners.push(listener)
+	    document.addEventListener('keydown', listener)
+	}
+    }
+    if (keyboardMode) {
+	attachKbdEvent(boxes, b => {
+	    b.querySelector('input').checked = true
+	    attachKbdEvent(b.querySelector('.entries'), e => {
+		e.querySelector('a')?.click()
+	    })
+	})
+    } else {
+	clean()
+    }
+}
+
 document.addEventListener("DOMContentLoaded", ()=>{
     let dbboxes = db.getItem('boxes') || "[\n\n]"
     if (db.getItem('dark') === 'true') {
@@ -196,4 +235,11 @@ document.addEventListener("DOMContentLoaded", ()=>{
 		).att$('id', 'boxes')
             ).att$('id', 'content')
     ))
+
+    document.addEventListener('keydown', e => {
+	if (e.key === 'Tab') {
+	    e.preventDefault()
+	    toggleKeyboardMode()
+	}
+    })
 })

@@ -60,6 +60,7 @@ main {
     display: flex;
     flex-flow: column nowrap;
     max-height: var(--max-box-height);
+    position: relative;
 }
 
 .entries {
@@ -111,4 +112,29 @@ input[type='radio'] {
 
 .title h1::-webkit-scrollbar {
     display: none;
+}
+
+.kbdClue {
+    cursor: pointer;
+    aspect-ratio: 1/1;
+    height: 1.5rem;
+    line-height: 1.5rem;
+    vertical-align: middle;
+    text-align: center;
+    color: var(--background);
+    background: var(--accent);
+    border-radius: 4px;
+    display: block;
+    font-style: normal;
+}
+
+.box > .kbdClue {
+    position: absolute;
+    top: -2rem;
+    left: 1rem;
+}
+
+.entry > .kbdClue {
+    margin-right: 10px;
+    display: inline-block;
 }
