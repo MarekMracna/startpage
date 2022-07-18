@@ -71,8 +71,8 @@ a:hover {
     flex-direction: column;
 }
 
-#settingsOpen, #darkmode {
-    color: var(--fg);
+#settingsOpen, #darkmode, kbd {
+    color: var(--background);
 }
 
 #settings [clickable] {
