@@ -116,7 +116,11 @@ function format(d) {
     }
 }
 
-function updateDB(iBoxes, iSplash, then) {
+function updateDB(iBoxes, iSearch, iSplash, then) {
+    db.setItem('search', iSearch)
+    search.setURL$(iSearch)
+          .att$('readonly', !iSearch)
+          .att$('placeholder', iSearch ? "Press 's' to search..." : "Set up a search engine in the settings")
     if (iSplash) {
         splash.src = iSplash
         db.setItem('splash', iSplash)
@@ -136,8 +140,10 @@ function updateDB(iBoxes, iSplash, then) {
 }
 
 let _event_listeners = []
-function toggleKeyboardMode() {
-    body.toggleAttribute('kbd')
+function toggleKeyboardMode(force) {
+    // BUG: opening a box and closing it with mouse breaks state
+
+    body.att$('kbd', force)
     function clean() {
 	for (const l of _event_listeners) {
 	    document.removeEventListener('keydown', l)
@@ -182,7 +188,10 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if (db.getItem('dark') === 'true') {
         document.documentElement.toggleAttribute('dark')
     }
+
+    $.init()
     const iLayout = $.editor()
+    const iSearch = $.input().att$('type', 'text')
     const iSplash = $.input().att$('type', 'text')
     const settings = $.dialog(
 	[
@@ -202,15 +211,20 @@ document.addEventListener("DOMContentLoaded", ()=>{
 		 .click()
             }),
 	    $.CANCEL,
-	    overlay => $.button('Save').click$(() => updateDB(iLayout.value, iSplash.value, overlay.toggle$))
-	],
-	$.tabs({
+        overlay => $.button('Save').click$(() => updateDB(iLayout.value, iSearch.value, iSplash.value, overlay.toggle$))
+    ],
+    $.tabs({
             'Boxes': () => $.div(
                 iLayout.map$(e => e.value = db.getItem('boxes')),
                 colorPreview()
 		    .css$('display', 'flex')
 		    .css$('border','solid 1px black')
             ).att$('id', 'settingsBoxes'),
+            'Search': () => $.div(
+                $.p('Something like https://search.org/search?q='),
+                $.label('Search URL: '),
+                iSearch.att$('id', 'iSearch').att$('name', 'iSearch').map$(e => e.value = db.getItem('search'))
+            ),
             'Theme': () => $.div(
                 $.label('Picture: ').att$('for', 'iSplash'),
                 iSplash.att$('id', 'iSplash').att$('name', 'iSplash').map$(e => e.value = db.getItem('splash'))
@@ -218,11 +232,23 @@ document.addEventListener("DOMContentLoaded", ()=>{
         })
     ).att$('id', 'settings')
     body.appendChild(settings)
+    const search_url = db.getItem('search')
     body.appendChild(
-	$.main(
-	    $.span($.kbd('Tab'), " to toggle keyboard navigation"),
-            $.button('LIGHT/DARK')
-             .att$('id', 'darkmode')
+    $.main(
+        $.searchbox(search_url || "")
+         .att$('id', 'search')
+         .att$('readonly', !search_url)
+         .att$('placeholder', search_url ? "Press 's' to search..." : "Set up a search engine in the settings")
+         .on$('focus', () => {
+             if (db.getItem('search')) search.att$('placeholder', '')
+             else { settings.toggle$(); settings.querySelector('tabs').switchTo$('Search') }
+         })
+         .on$('blur', () => {
+             if (db.getItem('search')) search.att$('placeholder', "Press 's' to search...")
+         }),
+        $.span($.kbd('Tab'), " to toggle keyboard navigation"),
+        $.button('LIGHT/DARK')
+         .att$('id', 'darkmode')
              .click$(() => {
                  document.documentElement.toggleAttribute('dark')
                  db.setItem('dark', ''+document.documentElement.hasAttribute('dark'))
@@ -243,10 +269,21 @@ document.addEventListener("DOMContentLoaded", ()=>{
     ))
 
     document.addEventListener('keydown', e => {
-	if (e.key === 'Tab') {
-	    e.preventDefault()
-	    if (settings.hasAttribute('hidden'))
-		toggleKeyboardMode()
-	}
+        if (settings.hasAttribute('hidden')) {
+            switch (e.key) {
+                case 'Tab':
+                    e.preventDefault()
+                    document.activeElement.blur()
+                    toggleKeyboardMode()
+                    break;
+                case 's':
+                    if (document.activeElement === search) break;
+                    e.preventDefault()
+                    toggleKeyboardMode(false)
+                    search.focus()
+                    break;
+                default: break;
+            }
+        }
     })
 })

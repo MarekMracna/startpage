@@ -71,7 +71,7 @@ a:hover {
     flex-direction: column;
 }
 
-#settingsOpen, #darkmode, kbd {
+#search, #settingsOpen, #darkmode, kbd {
     color: var(--background);
 }
 
@@ -132,4 +132,9 @@ input[type='radio']:checked ~ .entries {
     max-width: var(--max-box-width);
     padding: var(--padding);
     user-select: auto;
+}
+
+#search:focus-visible {
+    outline: 3px currentColor double;
+    outline-offset: -.5rem;
 }
