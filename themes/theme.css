@@ -23,7 +23,7 @@
     --color13: #969696;
     --color14: #B0B0B0;
     --color15: #dbdbdb;
-    
+
     --bg: var(--foreground);
     --fg: var(--background);
     --accent: var(--color4);

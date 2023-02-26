@@ -8,7 +8,7 @@ const box = (data, index) => {
     let t = $.h1()
     const hash = unique()
     const b = $.div(
-	$.kbd(kbd_clue_labels[index]).class$('kbdClue'),
+    $.kbd(kbd_clue_labels[index]).class$('kbdClue'),
         $.radio()
          .att$('name', `box`)
          .att$('id', `box${hash}`),
@@ -17,29 +17,30 @@ const box = (data, index) => {
             .att$('for', `box${hash}`)
             .click$(e => {
                 e.preventDefault()
-		b.toggle$()
+        b.toggle$()
             }),
-        $.div(...data.entries.map((de, index) => 
+        $.div(...data.entries.map((de, index) =>
             format(de)($.div($.kbd(kbd_clue_labels[index]).class$('kbdClue'))).class$('entry')
         )).class$('entries')
     ).class$('box')
     b.toggle$ = force => {
-	if (data.entries.length == 0) return;
-	const r = b.querySelector('input')
-	const new_val = force === undefined ? !r.checked : force
-	r.checked = new_val
-	boxes.att$('current', new_val && hash)
+    if (data.entries.length == 0) return;
+    const r = b.querySelector('input')
+    const new_val = force === undefined ? !r.checked : force
+    r.checked = new_val
+    boxes.att$('current', new_val && hash)
     }
     return b
 }
 
-const colorPreview = () => $.div(...
-					 [...Array(16).keys()] // = [0..16]
-				 .map(x=>$.span()
-					  .click$(() => navigator.clipboard.writeText(`#{var(--color${x})}`))
-					  .att$('title', `#{var(--color${x})}`)
-					  .css$('background-color', `var(--color${x})`)
-)).class$('swatches')
+const colorPreview = () =>
+    $.div(...[...Array(16).keys()] // = [0..16]
+          .map(x=>$.span()
+                   .click$(() =>
+                       navigator.clipboard.writeText(`#{var(--color${x})}`))
+                   .att$('title', `#{var(--color${x})}`)
+                   .css$('background-color', `var(--color${x})`)
+    )).class$('swatches')
 
 const kbd_clue_labels = "1234567890abcdefghijklmnopqrstuvwxyz".split('')
 
@@ -106,13 +107,13 @@ function format(d) {
         }
     }
     const modifiers = []
-    const rawText = d.replace(/([#\/%@])\{([^\}]+)\}/g, (_, sigil, bracket) => 
+    const rawText = d.replace(/([#\/%@])\{([^\}]+)\}/g, (_, sigil, bracket) =>
         modifiers.push(sigilMap[sigil](bracket)) && '')
-    
+
     return el => {
-	modifiers.forEach(f => f(el))
-	el.ch$(rawText)
-	return el
+    modifiers.forEach(f => f(el))
+    el.ch$(rawText)
+    return el
     }
 }
 
@@ -145,41 +146,41 @@ function toggleKeyboardMode(force) {
 
     body.att$('kbd', force)
     function clean() {
-	for (const l of _event_listeners) {
-	    document.removeEventListener('keydown', l)
-	}
+    for (const l of _event_listeners) {
+        document.removeEventListener('keydown', l)
     }
-    
+    }
+
     function attachKbdEvent(parent, fn) {
-	for (let i = 0; i < parent.children.length; i++) {
-	    const listener = e => {
-		if (e.key === kbd_clue_labels[i]) {
-		    clean()
-		    fn(parent.children[i])
-		}
-	    }
-	    _event_listeners.push(listener)
-	    document.addEventListener('keydown', listener)
-	}
+    for (let i = 0; i < parent.children.length; i++) {
+        const listener = e => {
+        if (e.key === kbd_clue_labels[i]) {
+            clean()
+            fn(parent.children[i])
+        }
+        }
+        _event_listeners.push(listener)
+        document.addEventListener('keydown', listener)
+    }
     }
     if (body.hasAttribute('kbd')) {
-	let curr = boxes.getAttribute('current')
-	if (curr) {
-	    const current_box = boxes.querySelector(`#box${curr}`).parentElement
-	    attachKbdEvent(current_box.querySelector('.entries'), e => {
-		e.querySelector('a')?.click()
-	    })
-	} else {
-	    attachKbdEvent(boxes, b => {
-		b.toggle$(true)
-		attachKbdEvent(b.querySelector('.entries'), e => {
-		    e.querySelector('a')?.click()
-		})
-	    })
-	}
+    let curr = boxes.getAttribute('current')
+    if (curr) {
+        const current_box = boxes.querySelector(`#box${curr}`).parentElement
+        attachKbdEvent(current_box.querySelector('.entries'), e => {
+        e.querySelector('a')?.click()
+        })
     } else {
-	clean()
-	Array.from(boxes.children).forEach(b => b.toggle$(false))
+        attachKbdEvent(boxes, b => {
+        b.toggle$(true)
+        attachKbdEvent(b.querySelector('.entries'), e => {
+            e.querySelector('a')?.click()
+        })
+        })
+    }
+    } else {
+        clean()
+        Array.from(boxes.children).forEach(b => b.toggle$(false))
     }
 }
 
@@ -194,31 +195,31 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const iSearch = $.input().att$('type', 'text')
     const iSplash = $.input().att$('type', 'text')
     const settings = $.dialog(
-	[
-	    overlay => $.button('Import').click$(()=>{
-		const input = $.input().att$('type', 'file').att$('accept', '.json')
-		input.click()
-		input.addEventListener('change', ()=> {
-                    input.files[0].text().then(str => updateDB(str, overlay.toggle$))
-		})
-            }),
-	    () => $.button('Export').click$(e => {
-		const data = db.getItem('boxes')
-		const filename = `startpage-${(new Date()).toISOString().split('T')[0]}.json`
-		$.a()
-		 .att$('download', filename)
-		 .att$('href', `data:application/json;charset=utf-8,${encodeURIComponent(data)}`)
-		 .click()
-            }),
-	    $.CANCEL,
+    [
+        overlay => $.button('Import').click$(()=>{
+            const input = $.input().att$('type', 'file').att$('accept', '.json')
+            input.click()
+            input.addEventListener('change', ()=> {
+                input.files[0].text().then(str => updateDB(str, overlay.toggle$))
+            })
+        }),
+        () => $.button('Export').click$(e => {
+            const data = db.getItem('boxes')
+            const filename = `startpage-${(new Date()).toISOString().split('T')[0]}.json`
+            $.a()
+             .att$('download', filename)
+             .att$('href', `data:application/json;charset=utf-8,${encodeURIComponent(data)}`)
+             .click()
+        }),
+        $.CANCEL,
         overlay => $.button('Save').click$(() => updateDB(iLayout.value, iSearch.value, iSplash.value, overlay.toggle$))
     ],
     $.tabs({
             'Boxes': () => $.div(
                 iLayout.map$(e => e.value = db.getItem('boxes')),
                 colorPreview()
-		    .css$('display', 'flex')
-		    .css$('border','solid 1px black')
+            .css$('display', 'flex')
+            .css$('border','solid 1px black')
             ).att$('id', 'settingsBoxes'),
             'Search': () => $.div(
                 $.p('Something like https://search.org/search?q='),
@@ -257,14 +258,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
              .att$('id', 'settingsOpen')
              .click$(() => settings.toggle$()),
             $.div(
-		$.img()
-                 .att$('id', 'splash')
-                 .att$('src', db.getItem('splash')),
-		$.div(...JSON.parse(dbboxes)
-		      .map(box)
-		      .map((b, i) => b.map$(
-			  e=>e.querySelector('.title').style.setProperty('--color', `var(--color${i%14+2})`)))
-		).att$('id', 'boxes')
+        $.img()
+         .att$('id', 'splash')
+         .att$('src', db.getItem('splash')),
+        $.div(...JSON.parse(dbboxes)
+              .map(box)
+              .map((b, i) => b.map$(
+              e=>e.querySelector('.title').style.setProperty('--color', `var(--color${i%14+2})`)))
+        ).att$('id', 'boxes')
             ).att$('id', 'content')
     ))
 
