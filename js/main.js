@@ -118,6 +118,7 @@ function format(d) {
 }
 
 function updateDB(iBoxes, iSearch, iSplash, then) {
+    iSearch = enforceProtocol(iSearch)
     db.setItem('search', iSearch)
     search.setURL$(iSearch)
           .att$('readonly', !iSearch)
