@@ -93,7 +93,15 @@ function format(d) {
     const sigilMap = {
         '#' : color => el => el.map$(self => self.style.setProperty('--color', color)),
         '/' : href  => el => {
-            let link = $.a().att$('href', enforceProtocol(href))
+            let url = enforceProtocol(href)
+            let link = $.a().att$('href', url)
+            if (url.startsWith('file://')) {
+                link.on$('click', e => {
+                    e.preventDefault()
+                    navigator.clipboard.writeText(url)
+                    alert("Cannot open local files, instead copied link to clipboard.")
+                })
+            }
             el.ch$(link).wrap$(link)
         },
         '%' : url   => el => {
