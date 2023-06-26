@@ -63,8 +63,9 @@ function unique(digits=6) {
 }
 
 function enforceProtocol(url) {
-    if (url.startsWith('http://') || url.startsWith('https://')) return url
-    return 'http://'+url
+    /// Match a protocol (3+ alphanum.), '://' and rest
+    if (/\w{3,}:\/\/.+/.test(url)) return url
+    return 'http://'+url      // Go with HTTP by default
 }
 
 function format_date(d) {
